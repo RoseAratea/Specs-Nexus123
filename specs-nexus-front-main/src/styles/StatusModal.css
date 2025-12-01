@@ -1,0 +1,219 @@
+/* StatusModal.css */
+.payment-completed-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1020;
+  backdrop-filter: blur(4px);
+}
+
+.payment-completed-modal-container {
+  position: relative;
+  width: 90%;
+  max-width: 480px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  animation: StatusModalFadeIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+@keyframes StatusModalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.payment-completed-modal-header {
+  position: relative;
+  padding: 30px 30px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.payment-completed-icon-container {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.payment-completed-icon-container i {
+  font-size: 32px;
+}
+
+.close-payment-completed-modal {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #6b7280;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.close-payment-completed-modal:hover {
+  background: #fff;
+  color: #374151;
+  transform: scale(1.1);
+}
+
+.payment-completed-modal-content {
+  padding: 0 30px 30px;
+  text-align: center;
+}
+
+.payment-completed-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 12px;
+  line-height: 1.3;
+}
+
+.payment-completed-message {
+  font-size: 16px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.payment-completed-modal-footer {
+  padding: 20px 30px 30px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-close {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-width: 100px;
+  justify-content: center;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-close:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+}
+
+.btn-close:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
+}
+
+.btn-error {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.btn-error:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .payment-completed-modal-container {
+    width: 95%;
+    max-width: 400px;
+  }
+  
+  .payment-completed-modal-header {
+    padding: 25px 20px 15px;
+  }
+  
+  .payment-completed-icon-container {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 15px;
+  }
+  
+  .payment-completed-icon-container i {
+    font-size: 28px;
+  }
+  
+  .payment-completed-modal-content {
+    padding: 0 20px 25px;
+  }
+  
+  .payment-completed-title {
+    font-size: 20px;
+  }
+  
+  .payment-completed-message {
+    font-size: 15px;
+  }
+  
+  .payment-completed-modal-footer {
+    padding: 15px 20px 25px;
+  }
+  
+  .btn-close {
+    width: 100%;
+    min-width: auto;
+  }
+}

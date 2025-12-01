@@ -1,0 +1,108 @@
+/* Import Poppins font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem ;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f2ffee, #caf9d0);
+  width: 100%;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-family: 'Poppins', sans-serif; /* Added Poppins font */
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.toggle-sidebar-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: #253f21;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.toggle-sidebar-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Make the page title bolder and use Poppins */
+.page-title {
+  font-size: 1.70rem !important;
+  font-weight: 700; /* Increased from 600 to make it bolder */
+  color: #253f21;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: 0.5px; /* Added for better readability */
+}
+
+.datetime {
+  font-size: 1rem;
+  color: #4a5568;
+  text-align: right;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500; /* Medium weight for datetime */
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0.75rem 1rem;
+  }
+
+  .toggle-sidebar-btn {
+    font-size: 1.1rem;
+    width: 32px;
+    height: 32px;
+  }
+
+  .page-title {
+    font-size: 1.5rem !important;
+  }
+
+  .datetime {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .page-title {
+    font-size: 1rem;
+  }
+
+  .datetime {
+    display: none;
+  }
+  
+  /* Show date time in smaller format for very small screens */
+  .header:hover .datetime {
+    display: block;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    padding: 0.5rem;
+    border-radius: 0 0 0 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 0.75rem;
+  }
+}

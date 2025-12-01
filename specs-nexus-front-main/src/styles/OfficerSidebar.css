@@ -1,0 +1,207 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 220px;
+  background-color: #253f21;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  color: #fff;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar.collapsed {
+  width: 60px;
+}
+
+.logo-container {
+  padding: 0.5rem 1rem 1.5rem;
+  text-align: center;
+}
+
+.logo {
+  color: #ffffff;
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.profile-icon {
+  font-size: 2rem;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.15);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+  flex-shrink: 0;
+}
+
+.user-info {
+  text-align: center;
+  width: 100%;
+}
+
+.user-info h3 {
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-info p {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0.2rem 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+nav ul li {
+  margin: 0.25rem 0;
+  width: 100%;
+}
+
+nav ul li a {
+  display: flex;
+  align-items: center;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.2s ease;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+nav ul li a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+nav ul li a.active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+nav ul li a.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #fff;
+}
+
+.nav-icon {
+  font-size: 1.25rem;
+  min-width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-text {
+  margin-left: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  background-color: rgba(242, 58, 58, 0.8);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  margin: 1rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.logout-btn:hover {
+  background-color: rgb(242, 58, 58);
+}
+
+.sidebar.collapsed .nav-text,
+.sidebar.collapsed .user-info {
+  display: none;
+}
+
+.sidebar.collapsed .profile-icon {
+  margin-bottom: 0;
+}
+
+.sidebar.collapsed .logout-btn {
+  padding: 0.75rem;
+  justify-content: center;
+  margin: 1rem auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.sidebar.collapsed .nav-icon {
+  margin-right: 0;
+}
+
+.sidebar.collapsed nav ul li a {
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-220px);
+  }
+  
+  .sidebar.collapsed {
+    transform: translateX(-60px);
+  }
+  
+  .layout-container.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+}

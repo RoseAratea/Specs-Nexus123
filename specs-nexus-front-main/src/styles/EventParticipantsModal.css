@@ -1,0 +1,290 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+.ep-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ep-modal-container {
+  background: white;
+  border-radius: 8px;
+  padding: 32px;
+  width: 100%;
+  max-width: 800px; /* Increased from 600px */
+  max-height: 85vh; /* Increased from 80vh */
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.ep-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 28px; /* Increased for larger modal */
+  cursor: pointer;
+  color: #2d5641;
+  transition: color 0.2s;
+}
+
+.ep-modal-close:hover {
+  color: #1e3a2c;
+}
+
+.ep-modal-container h2 {
+  color: #2d5641;
+  margin: 0 0 20px; /* Adjusted for larger modal */
+  font-weight: 600;
+  font-size: 28px; /* Increased for larger modal */
+}
+
+.ep-search-container {
+  margin-bottom: 20px; /* Adjusted for larger modal */
+}
+
+.ep-search-input {
+  width: 100%;
+  padding: 12px; /* Increased padding */
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 16px; /* Increased for readability */
+  font-family: 'Poppins', sans-serif;
+}
+
+.ep-search-input:focus {
+  outline: none;
+  border-color: #2d5641;
+  box-shadow: 0 0 0 2px rgba(45, 86, 65, 0.2);
+}
+
+.ep-participant-stats {
+  display: flex;
+  justify-content: space-between;
+  color: #666;
+  font-size: 16px; /* Increased for readability */
+  margin-bottom: 20px;
+}
+
+.ep-participants-list {
+  max-height: 500px; /* Increased to accommodate larger modal */
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.ep-participant-item {
+  padding: 16px; /* Increased padding */
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ep-participant-item:hover {
+  background: #f8faf9;
+}
+
+.ep-participant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.ep-participant-name {
+  margin: 0;
+  font-size: 18px; /* Increased for readability */
+  font-weight: 500;
+  color: #2d5641;
+}
+
+.ep-participant-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ep-participant-email-link {
+  color: #2d5641;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ep-participant-email-link:hover {
+  text-decoration: underline;
+}
+
+.ep-upload-cert-btn {
+  padding: 8px 16px; /* Increased padding */
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  background: #2d5641;
+  color: white;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.ep-upload-cert-btn:hover {
+  background: #1e3a2c;
+  transform: translateY(-1px);
+}
+
+.ep-upload-cert-btn:disabled {
+  background: #f0f0f0;
+  color: #aaa;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ep-participant-details {
+  display: flex;
+  flex-direction: column;
+  color: #666;
+  font-size: 14px;
+}
+
+.ep-participant-email {
+  color: #888;
+  font-size: 13px;
+}
+
+.ep-certificate-column {
+  color: #666;
+  font-size: 14px;
+}
+
+.ep-certificate-link {
+  color: #2d5641;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.ep-certificate-link:hover {
+  text-decoration: underline;
+}
+
+.ep-no-certificate {
+  color: #888;
+  font-style: italic;
+}
+
+.ep-no-results {
+  color: #666;
+  text-align: center;
+  padding: 24px;
+}
+
+.ep-loading {
+  text-align: center;
+  padding: 24px;
+  color: #2d5641;
+  font-weight: 500;
+}
+
+.ep-modal-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.ep-copy-emails-btn, .ep-send-email-btn {
+  padding: 12px 20px; /* Increased padding */
+  border: none;
+  border-radius: 4px;
+  font-size: 16px; /* Increased for readability */
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.ep-copy-emails-btn {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.ep-copy-emails-btn:hover {
+  background: #d0d0d0;
+  transform: translateY(-1px);
+}
+
+.ep-send-email-btn {
+  background: #2d5641;
+  color: white;
+}
+
+.ep-send-email-btn:hover {
+  background: #1e3a2c;
+  transform: translateY(-1px);
+}
+
+.ep-copy-emails-btn:disabled, .ep-send-email-btn:disabled {
+  background: #f0f0f0;
+  color: #aaa;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ep-modal-actions a.disabled {
+  pointer-events: none;
+}
+
+@media (max-width: 480px) {
+  .ep-modal-container {
+    margin: 16px;
+    padding: 20px; /* Adjusted for mobile */
+  }
+  
+  .ep-modal-container h2 {
+    font-size: 24px; /* Adjusted for mobile */
+  }
+  
+  .ep-participant-name {
+    font-size: 16px;
+  }
+  
+  .ep-participant-item {
+    padding: 12px;
+  }
+  
+  .ep-modal-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .ep-upload-cert-btn {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+  
+  .ep-certificate-column {
+    font-size: 13px;
+  }
+}

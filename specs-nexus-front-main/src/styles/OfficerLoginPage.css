@@ -1,0 +1,470 @@
+@import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Konkhmer+Sleokchher&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  background-color: #253F21;
+}
+
+.login-page {
+  font-family: 'Dela Gothic One', sans-serif;
+  background-color: #253F21;
+  color: white;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.site-header {
+  display: none; /* Hide the original header */
+}
+
+.top-elements {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 35px 10px;
+  margin-bottom: 15px;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.branding {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo {
+  width: 80px;
+  height: auto;
+  /* Updated filter to better match #f47c3c orange */
+  filter: brightness(0) saturate(100%) invert(56%) sepia(51%) 
+         saturate(3688%) hue-rotate(346deg) brightness(99%) contrast(95%);
+  transition: filter 0.3s ease;
+}
+
+.header-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.specs {
+  font-size: 40px;
+  color: #ffffff; /* Different color for officer login */
+  margin-right: 0.3rem;
+  text-shadow: 4px 3px 3px rgba(0, 0, 0, 0.5);
+}
+
+.nexus {
+  color: #f47c3c; /* Different color for officer login */
+  text-shadow: 4px 3px 3px rgba(0, 0, 0, 0.5);
+}
+
+
+.login-button {
+  background: linear-gradient(135deg, #ffffff 0%, #e9f0d1 100%);
+  color: #253F21;
+  border: none;
+  padding: 10px 22px;
+  padding-left: 18px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 20px;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.login-button::before {
+  content: "\f007"; /* Font Awesome user icon */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  display: inline-block;
+  font-size: 18px;
+  margin-right: 2px;
+}
+
+.login-button:hover {
+  background: linear-gradient(135deg, #4b9040 0%, #253f21 100%);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.container {
+  position: relative;
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  padding: 3.5rem 2rem 1rem;
+}
+
+.left-section {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
+  z-index: 1;
+  letter-spacing: 5px;
+  padding-top: 8rem;
+  gap: 2.5rem;
+}
+
+.acronym {
+  list-style: none;
+  font-size: 3.5rem;
+  line-height: 4rem;
+  font-weight: bold;
+  margin-bottom: 2.5rem;
+  padding-left: 1rem;
+  margin-left: 1rem;
+  text-shadow: 4px 3px 4px rgba(0, 0, 0, 0.731);
+}
+
+.acronym li span {
+  color: #f47c3c;
+  font-weight: bold;
+  margin-right: 0.5rem;
+  text-shadow: 4px 3px 3px rgba(0, 0, 0, 0.5);
+}
+
+.seals {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0rem;
+}
+
+.seals img {
+  width: 70px;
+  margin-right: 15px;
+}
+
+.right-section {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* For officer page, use a watermark-style logo in background */
+.right-section {
+  position: relative;
+}
+
+.seal-image {
+  width: 800px;
+  height: 800px;
+  object-fit: cover;
+  border: 18px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  opacity: 1; /* Changed from 0.100 to 1 for full opacity */
+  margin-top: 200px;
+  margin-left: 100px;
+  position: relative;
+}
+
+/* Login Modal Styles - Adjusted for Officer Login */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background-color: #fff;
+  border-radius: 25px 25px 25px 25px !important;
+  width: 450px !important;
+  padding: 40px 35px !important;
+  position: relative;
+  box-shadow: 0 -8px 16px rgba(0, 0, 0, 0.2);
+  font-family: 'Konkhmer Sleokchher', sans-serif;
+  animation: slideUp 0.4s ease-out
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.welcome-title {
+  font-family: 'Dela Gothic One', cursive;
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 40px !important;
+  color: #253f21;
+}
+
+.close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #000;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 20px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  transition: border-color 0.2s;
+}
+
+.modal-content input:focus {
+  outline: none;
+  border-color: #205328;
+  box-shadow: 0 0 0 2px rgba(75, 83, 32, 0.2);
+}
+
+.error {
+  color: #e53935;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}
+
+.modal-login-button {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 25px;
+  background-color: #cbffc3;
+  color: #253f21;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s ease;
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.185);
+  font-weight: bold;
+}
+
+.modal-login-button:hover {
+  background: linear-gradient(135deg, #4b9040 0%, #253f21 100%);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.modal-login-button:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.member-login-link {
+  margin-top: 1rem;
+  text-align: center;
+  font-family: 'Konkhmer Sleokchher', sans-serif;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.member-login-link a {
+  color: #f47c3c;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.member-login-link a:hover {
+  text-decoration: underline;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .login-page {
+    overflow-y: auto;
+    min-height: 100%;
+    height: auto;
+  }
+  
+  .top-elements {
+    padding: 15px 20px 5px;
+    margin-bottom: 10px;
+    justify-content: center;
+  }
+  
+  .header-logo {
+    width: 50px;
+    /* Same filter for mobile */
+    filter: brightness(0) saturate(100%) invert(56%) sepia(51%) 
+           saturate(3688%) hue-rotate(346deg) brightness(99%) contrast(95%);
+  }
+  
+  .header-title {
+    font-size: 1.8rem;
+  }
+  
+  .specs {
+    font-size: 30px;
+    margin-right: 0.6rem;
+    text-shadow: 4px 3px 3px rgb(0, 0, 0);
+  }
+  
+  .officer-badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+  }
+  
+  .login-button {
+    display: none;
+  }
+  
+  .container {
+    flex-direction: column;
+    padding: 0;
+    height: auto;
+    flex: 1;
+    padding-bottom: 50px;
+    padding-top: 2.5rem;
+  }
+  
+  .left-section, .right-section {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .left-section {
+    padding: 20px;
+    gap: 1.5rem;
+  }
+  
+  .right-section {
+    padding: 20px 0;
+  }
+  
+  .acronym {
+    font-size: 1.8rem;
+    line-height: 2rem;
+    letter-spacing: 2px;
+    padding-left: 0;
+    margin-left: 0;
+  }
+  
+  .seals {
+    justify-content: center;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    gap: 1rem;
+  }
+  
+  .seals img {
+    width: 65px;
+    margin: 0 10px;
+  }
+  
+  .seal-image {
+    width: 180px;
+    height: 180px;
+    border-width: 3px;
+    margin-top: 15px;
+    margin-left: 10px;
+    opacity: 1; /* Full opacity for mobile as well */
+  }
+  
+  /* Mobile Login Panel - Updated to match LoginPage but positioned lower */
+  .modal {
+    background: none;
+    align-items: flex-end;
+    position: fixed;
+    bottom: 20px; /* Changed from 0 to create space at bottom */
+    left: 0;
+    right: 0;
+    height: auto;
+    padding: 0 10px; /* Add side padding for floating appearance */
+  }
+  
+  .modal-content {
+    width: 100% !important;
+    border-radius: 20px !important; /* Rounded on all corners since it's floating */
+    padding: 30px 20px 40px !important;
+    margin-bottom: 0;
+    min-height: 50vh;
+    box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* Fix for iOS devices */
+  .mobile-modal {
+    border-radius: 20px !important; /* All corners rounded */
+    margin-bottom: 0 !important;
+    padding-bottom: env(safe-area-inset-bottom, 40px);
+  }
+}
+
+/* Animation for mobile login panel */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.slide-up-enter {
+  transform: translateY(100%);
+}
+
+.slide-up-enter-active {
+  transform: translateY(0);
+  transition: transform 0.3s ease;
+}
+
+.slide-up-exit {
+  transform: translateY(0);
+}
+
+.slide-up-exit-active {
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}

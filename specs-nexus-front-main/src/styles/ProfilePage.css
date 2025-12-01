@@ -1,0 +1,225 @@
+/* ProfilePage.css */
+
+/* Container for the profile section */
+.profile-section {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #28a745;
+  margin: 1rem auto;
+  max-width: 600px; /* Constrain width for better readability */
+  transition: all 0.3s ease; /* Smooth transitions for responsive changes */
+}
+
+/* Profile card styling */
+.profile-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e0e0e0;
+}
+
+/* Profile card header */
+.profile-card h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #222;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Profile field layout */
+.profile-field {
+  display: flex;
+  flex-direction: column; /* Stack label and value vertically on mobile */
+  margin-bottom: 1rem;
+  padding: 0.75rem 0;
+  font-size: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* Remove border from last field */
+.profile-field:last-child {
+  border-bottom: none;
+}
+
+/* Label styling */
+.profile-field .label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+/* Value styling */
+.profile-field .value {
+  color: #444;
+}
+
+/* Form styling */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Input and select styling */
+.profile-input,
+.profile-select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.profile-input:focus,
+.profile-select:focus {
+  border-color: #28a745;
+  outline: none;
+}
+
+/* Button styling */
+.btn-edit,
+.btn-save,
+.btn-cancel {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-edit {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  margin-top: 1rem;
+  align-self: center;
+}
+
+.btn-edit:hover {
+  background-color: #218838;
+}
+
+.btn-save {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+}
+
+.btn-save:hover {
+  background-color: #218838;
+}
+
+.btn-cancel {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+}
+
+.btn-cancel:hover {
+  background-color: #c82333;
+}
+
+/* Form actions container */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+/* Loading and error message styling */
+.loading,
+.error-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 1.2rem;
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+/* Desktop-specific styles */
+@media (min-width: 769px) {
+  .profile-field {
+    flex-direction: row; /* Horizontal layout on desktop */
+    justify-content: space-between;
+  }
+
+  .profile-field .label {
+    margin-bottom: 0;
+    width: 30%;
+  }
+
+  .profile-field .value,
+  .profile-input,
+  .profile-select {
+    width: 65%;
+  }
+}
+
+/* Tablet and mobile styles */
+@media (max-width: 768px) {
+  .profile-section {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+
+  .profile-card {
+    padding: 1rem;
+  }
+
+  .profile-card h2 {
+    font-size: 1.25rem;
+  }
+
+  .profile-field {
+    font-size: 0.9rem;
+  }
+
+  .btn-edit,
+  .btn-save,
+  .btn-cancel {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .profile-section {
+    margin: 0.25rem;
+    border-left-width: 2px; /* Thinner border on small screens */
+  }
+
+  .profile-card {
+    padding: 0.75rem;
+  }
+
+  .profile-card h2 {
+    font-size: 1.1rem;
+  }
+
+  .profile-field {
+    font-size: 0.85rem;
+  }
+
+  .btn-edit,
+  .btn-save,
+  .btn-cancel {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
