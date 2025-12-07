@@ -130,57 +130,77 @@ const OfficerManageEventsPage = () => {
       return;
     }
 
-    if (action === 'decline') {
-      // Frontend-only decline feedback for now
-      setApprovalModal({ isOpen: false, eventId: null });
-      setStatusModal({
-        isOpen: true,
-        title: 'Event Declined',
-        message: `The event plan has been declined.${reason ? ` Reason: ${reason}` : ''}`,
-        type: 'error',
-      });
-      return;
-    }
-
-    // Approve path – call backend endpoint
     try {
-      const response = await fetch(`${API_URL}/events/${eventId}/approve`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      if (action === 'decline') {
+        // Call backend decline endpoint
+        const formData = new FormData();
+        formData.append('reason', reason || 'No reason provided');
+        
+        const response = await fetch(`${API_URL}/events/${eventId}/decline`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        if (response.status === 401) {
-          localStorage.removeItem('officerAccessToken');
-          localStorage.removeItem('officerInfo');
-          navigate('/officer-login');
-          return;
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          if (response.status === 401) {
+            localStorage.removeItem('officerAccessToken');
+            localStorage.removeItem('officerInfo');
+            navigate('/officer-login');
+            return;
+          }
+          throw new Error(errorData.detail || 'Failed to decline event');
         }
-        throw new Error(errorData.detail || 'Failed to approve event');
+
+        setApprovalModal({ isOpen: false, eventId: null });
+        setStatusModal({
+          isOpen: true,
+          title: 'Event Declined',
+          message: `The event plan has been declined.${reason ? ` Reason: ${reason}` : ''}`,
+          type: 'error',
+        });
+      } else if (action === 'approve') {
+        // Approve path – call backend endpoint
+        const response = await fetch(`${API_URL}/events/${eventId}/approve`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          if (response.status === 401) {
+            localStorage.removeItem('officerAccessToken');
+            localStorage.removeItem('officerInfo');
+            navigate('/officer-login');
+            return;
+          }
+          throw new Error(errorData.detail || 'Failed to approve event');
+        }
+
+        setApprovalModal({ isOpen: false, eventId: null });
+        setStatusModal({
+          isOpen: true,
+          title: 'Event Approved',
+          message: 'The event plan has been successfully approved.',
+          type: 'success',
+        });
       }
-
-      setApprovalModal({ isOpen: false, eventId: null });
-
-      setStatusModal({
-        isOpen: true,
-        title: 'Event Approved',
-        message: 'The event plan has been successfully approved.',
-        type: 'success',
-      });
 
       // Refresh the event list
       const updated = await getOfficerEvents(token, showArchived);
       setEvents(updated);
     } catch (error) {
-      console.error("Failed to approve event:", error.message);
+      console.error(`Failed to ${action} event:`, error.message);
       setApprovalModal({ isOpen: false, eventId: null });
       setStatusModal({
         isOpen: true,
-        title: 'Error',
-        message: error.message || 'Failed to approve event. Please try again.',
+        title: `Error ${action === 'approve' ? 'Approving' : 'Declining'} Event`,
+        message: error.message || `Failed to ${action} event. Please try again.`,
         type: 'error',
       });
     }
