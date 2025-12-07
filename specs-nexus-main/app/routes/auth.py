@@ -57,9 +57,19 @@ def login(user_login: schemas.UserLogin, db: Session = Depends(get_db)):
 # Endpoint: GET /auth/profile
 # Description: Returns the profile of the currently authenticated user.
 @router.get("/profile", response_model=schemas.User)
-def read_user_profile(current_user: models.User = Depends(get_current_user)):
+def read_user_profile(current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
     logger.debug(f"Fetching profile for user {current_user.id} ({current_user.full_name})")
-    return current_user
+    # Re-query user to ensure fresh data and proper relationship loading
+    from sqlalchemy.orm import joinedload
+    user = db.query(models.User).options(
+        joinedload(models.User.certificates).joinedload(models.ECertificate.event)
+    ).filter(models.User.id == current_user.id).first()
+    
+    if not user:
+        logger.error(f"User {current_user.id} not found")
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return user
 
 # Endpoint: PUT /auth/profile
 # Description: Updates the profile of the currently authenticated user.

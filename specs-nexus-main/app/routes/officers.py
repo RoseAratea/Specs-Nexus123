@@ -56,12 +56,34 @@ def get_officers(db: Session = Depends(get_db)):
 
 # Endpoint: GET /officers/users
 # Description: Fetches all users for adding as officers. No authorization required.
-@router.get("/users", response_model=List[schemas.User])
+@router.get("/users")
 def get_users_for_officers(db: Session = Depends(get_db)):
     logger.debug("Fetching all users for officer creation")
-    users = db.query(models.User).all()
-    logger.info(f"Fetched {len(users)} users")
-    return users
+    try:
+        # Simple query without complex relationships to avoid serialization issues
+        users = db.query(models.User).all()
+        
+        # Convert to dict format to ensure proper serialization
+        users_list = []
+        for user in users:
+            user_dict = {
+                "id": user.id,
+                "email": user.email,
+                "student_number": user.student_number,
+                "full_name": user.full_name,
+                "year": user.year,
+                "block": user.block,
+                "last_active": user.last_active.isoformat() if user.last_active else None,
+                "certificates": None,  # Not needed for officer creation
+                "participated_events": None  # Not needed for this endpoint
+            }
+            users_list.append(user_dict)
+        
+        logger.info(f"Fetched {len(users_list)} users")
+        return users_list
+    except Exception as e:
+        logger.error(f"Error fetching users: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error fetching users: {str(e)}")
 
 # Endpoint: POST /officers/bulk
 # Description: Creates multiple officer accounts from selected user IDs. No authorization required.

@@ -14,7 +14,7 @@ class UserLogin(BaseModel):
     password: str
 
 class UserInfo(BaseModel):
-    full_name: str
+    full_name: Optional[str] = None
     block: Optional[str] = None
     year: Optional[str] = None
 
@@ -37,10 +37,10 @@ class ECertificateSchema(BaseModel):
     thumbnail_url: Optional[str] = None  # Add this field
     file_name: str
     issued_date: datetime
-    event_title: str
+    event_title: Optional[str] = None  # Made optional since it's not a direct model field
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Updated from orm_mode (Pydantic v2)
 
 class User(BaseModel):
     id: int

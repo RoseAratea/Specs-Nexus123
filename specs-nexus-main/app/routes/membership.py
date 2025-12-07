@@ -324,12 +324,16 @@ def officer_list_membership(
     db: Session = Depends(get_db)
 ):
     logger.debug("Fetching membership records")
-    memberships = db.query(models.Clearance)\
-        .options(joinedload(models.Clearance.user))\
-        .filter(models.Clearance.archived == False)\
-        .all()
-    logger.info(f"Fetched {len(memberships)} membership records")
-    return memberships
+    try:
+        memberships = db.query(models.Clearance)\
+            .options(joinedload(models.Clearance.user))\
+            .filter(models.Clearance.archived == False)\
+            .all()
+        logger.info(f"Fetched {len(memberships)} membership records")
+        return memberships
+    except Exception as e:
+        logger.error(f"Error fetching membership records: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error fetching membership records: {str(e)}")
 
 @router.post("/officer/create", response_model=schemas.MembershipSchema)
 def officer_create_membership(

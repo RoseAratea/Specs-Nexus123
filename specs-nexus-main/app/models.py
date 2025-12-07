@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, Float, ForeignKey, Table, Enum, Boolean
+import enum
 from sqlalchemy.orm import relationship
 from .database import Base
-import datetime
+from datetime import datetime, timezone
 
 year_enum = Enum('1st Year', '2nd Year', '3rd Year', '4th Year', name='year_enum')
 
@@ -23,6 +24,11 @@ class ECertificate(Base):
     issued_date = Column(DateTime)
     event = relationship("Event", back_populates="certificates")
     user = relationship("User", back_populates="certificates")
+    
+    @property
+    def event_title(self):
+        """Get event title from the relationship"""
+        return self.event.title if self.event else None
 
 class User(Base):
     __tablename__ = "users"
@@ -33,7 +39,7 @@ class User(Base):
     full_name = Column(String(255))
     year = Column(year_enum, nullable=True)
     block = Column(String(50))
-    last_active = Column(DateTime, default=datetime.datetime.utcnow)
+    last_active = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     events_joined = relationship("Event", secondary=event_participants, back_populates="participants")
     clearance = relationship("Clearance", back_populates="user", uselist=False)
     certificates = relationship("ECertificate", back_populates="user")
@@ -52,7 +58,7 @@ class Clearance(Base):
     denial_reason = Column(String(500), nullable=True)
     payment_date = Column(DateTime, nullable=True)
     approval_date = Column(DateTime, nullable=True)
-    last_updated = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+    last_updated = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     user = relationship("User", back_populates="clearance")
 
 class QRCode(Base):
@@ -66,11 +72,11 @@ class Event(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False)
     description = Column(String(1000))
-    date = Column(DateTime, default=datetime.datetime.utcnow)
+    date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     image_url = Column(String(255), nullable=True)
     location = Column(String(255), nullable=True)
     archived = Column(Boolean, default=False)
-    registration_start = Column(DateTime, default=datetime.datetime.utcnow)
+    registration_start = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     registration_end = Column(DateTime, nullable=True)
     participants = relationship("User", secondary=event_participants, back_populates="events_joined")
     certificates = relationship("ECertificate", back_populates="event")
@@ -81,20 +87,40 @@ class Event(Base):
 
     @property
     def registration_open(self):
-        now = datetime.datetime.utcnow()
-        if self.registration_start and now < self.registration_start:
-            return False
-        if self.registration_end and now > self.registration_end:
-            return False
+        now = datetime.now(timezone.utc)
+        if self.registration_start:
+            # Make registration_start timezone-aware if it's naive
+            reg_start = self.registration_start
+            if reg_start.tzinfo is None:
+                reg_start = reg_start.replace(tzinfo=timezone.utc)
+            if now < reg_start:
+                return False
+        if self.registration_end:
+            # Make registration_end timezone-aware if it's naive
+            reg_end = self.registration_end
+            if reg_end.tzinfo is None:
+                reg_end = reg_end.replace(tzinfo=timezone.utc)
+            if now > reg_end:
+                return False
         return True
 
     @property
     def registration_status(self):
-        now = datetime.datetime.utcnow()
-        if self.registration_start and now < self.registration_start:
-            return "not_started"
-        if self.registration_end and now > self.registration_end:
-            return "closed"
+        now = datetime.now(timezone.utc)
+        if self.registration_start:
+            # Make registration_start timezone-aware if it's naive
+            reg_start = self.registration_start
+            if reg_start.tzinfo is None:
+                reg_start = reg_start.replace(tzinfo=timezone.utc)
+            if now < reg_start:
+                return "not_started"
+        if self.registration_end:
+            # Make registration_end timezone-aware if it's naive
+            reg_end = self.registration_end
+            if reg_end.tzinfo is None:
+                reg_end = reg_end.replace(tzinfo=timezone.utc)
+            if now > reg_end:
+                return "closed"
         return "open"
 
 class Announcement(Base):

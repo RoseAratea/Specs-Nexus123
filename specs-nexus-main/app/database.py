@@ -102,7 +102,7 @@ logger.info("Processed DATABASE_URL validated")
 use_async = DATABASE_URL.startswith("postgresql+asyncpg://") or os.getenv("DB_ASYNC", "0") == "1"
 
 is_production = os.getenv("ENVIRONMENT") == "production"
-engine_kwargs = {"future": True}
+engine_kwargs = {}
 if is_production:
     engine_kwargs.update({"pool_recycle": 300, "pool_pre_ping": True})
 

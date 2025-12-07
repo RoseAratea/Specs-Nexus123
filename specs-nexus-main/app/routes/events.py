@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 from typing import List, Optional
 import boto3
@@ -118,7 +118,10 @@ async def generate_pdf_thumbnail(pdf_url: str, certificate_id: int) -> str:
 @router.get("/", response_model=List[schemas.EventSchema])
 def get_events(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     logger.debug(f"User {current_user.id} ({current_user.full_name}) fetching all active events")
-    events = db.query(models.Event).filter(models.Event.archived == False).all()
+    # Only show non-archived events to members
+    events = db.query(models.Event).filter(
+        models.Event.archived == False
+    ).all()
     for event in events:
         event.is_participant = any(participant.id == current_user.id for participant in event.participants)
     logger.info(f"User {current_user.id} fetched {len(events)} events")
@@ -134,7 +137,7 @@ def join_event(
     if not event:
         logger.error(f"Event {event_id} not found for user {current_user.id}")
         raise HTTPException(status_code=404, detail="Event not found")
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     if event.registration_start and now < event.registration_start:
         logger.error(f"Registration for event {event_id} has not started yet for user {current_user.id}")
         raise HTTPException(status_code=403, detail="Registration for this event has not started yet")
@@ -160,7 +163,7 @@ def leave_event(
     if not event:
         logger.error(f"Event {event_id} not found for user {current_user.id}")
         raise HTTPException(status_code=404, detail="Event not found")
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     if event.registration_end and now > event.registration_end:
         logger.error(f"Registration for event {event_id} has ended, cannot leave for user {current_user.id}")
         raise HTTPException(status_code=403, detail="Registration for this event has ended, cannot leave now")
@@ -180,6 +183,9 @@ def admin_list_events(
 ):
     logger.debug(f"Officer {current_officer.id} fetching events with archived={archived}")
     events = db.query(models.Event).filter(models.Event.archived == archived).all()
+    # Set is_participant to False for all events in officer view
+    for event in events:
+        event.is_participant = False
     logger.info(f"Fetched {len(events)} events with archived={archived}")
     return events
 @router.post("/officer/create", response_model=schemas.EventSchema)
@@ -202,7 +208,7 @@ async def admin_create_event(
         image_url = await upload_to_r2(image, object_key)
         logger.debug(f"Uploaded event image to R2: {image_url}")
     if not registration_start:
-        registration_start = datetime.utcnow()
+        registration_start = datetime.now(timezone.utc)
     new_event = models.Event(
         title=title,
         description=description,
@@ -210,7 +216,7 @@ async def admin_create_event(
         image_url=image_url,
         location=location,
         registration_start=registration_start,
-        registration_end=registration_end
+        registration_end=registration_end,
     )
     db.add(new_event)
     db.commit()
@@ -395,7 +401,7 @@ async def upload_e_certificate(
         existing_certificate.certificate_url = certificate_url
         existing_certificate.thumbnail_url = thumbnail_url
         existing_certificate.file_name = certificate.filename
-        existing_certificate.issued_date = datetime.utcnow()
+        existing_certificate.issued_date = datetime.now(timezone.utc)
         db.commit()
         db.refresh(existing_certificate)
         certificate_response = {
@@ -417,7 +423,7 @@ async def upload_e_certificate(
             certificate_url=certificate_url,
             thumbnail_url=thumbnail_url,
             file_name=certificate.filename,
-            issued_date=datetime.utcnow()
+            issued_date=datetime.now(timezone.utc)
         )
         db.add(new_certificate)
         db.commit()
@@ -481,33 +487,3 @@ async def get_certificate_thumbnail(
         db.refresh(certificate)
     logger.info(f"Thumbnail fetched for certificate {certificate_id}")
     return certificate.thumbnail_url
-
-@router.post("/{event_id}/approve", response_model=dict)
-def approve_event(
-    event_id: int,
-    db: Session = Depends(get_db),
-    current_officer: models.Officer = Depends(get_current_officer)
-):
-    """Approve an event plan (Admin only)"""
-    logger.debug(f"Officer {current_officer.id} attempting to approve event {event_id}")
-    
-    # Check if officer is admin
-    if current_officer.position and current_officer.position.lower() != "admin":
-        logger.error(f"Officer {current_officer.id} is not an admin, cannot approve events")
-        raise HTTPException(status_code=403, detail="Only admins can approve events")
-    
-    event = db.query(models.Event).filter(models.Event.id == event_id).first()
-    if not event:
-        logger.error(f"Event {event_id} not found")
-        raise HTTPException(status_code=404, detail="Event not found")
-    
-    # Update event status to approved
-    # Note: If there's no status field, we can add a note or use a different approach
-    # For now, we'll assume events have an approval status or we can add metadata
-    # Since the Event model doesn't have a status field, we'll just log the approval
-    # In a real scenario, you might want to add an 'approved' field or 'approval_status' field
-    
-    db.commit()
-    logger.info(f"Officer {current_officer.id} approved event {event_id} successfully")
-    
-    return {"message": "Event approved successfully", "event_id": event_id}
