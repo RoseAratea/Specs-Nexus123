@@ -12,7 +12,7 @@ from PIL import Image
 import fitz  # PyMuPDF
 from app.database import SessionLocal
 from app import models, schemas
-from app.auth_utils import get_current_user, get_current_officer
+from app.auth_utils import get_current_user, get_current_officer, admin_required
 logger = logging.getLogger("app.events")
 router = APIRouter(prefix="/events", tags=["Events"])
 def get_db():
@@ -118,13 +118,14 @@ async def generate_pdf_thumbnail(pdf_url: str, certificate_id: int) -> str:
 @router.get("/", response_model=List[schemas.EventSchema])
 def get_events(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     logger.debug(f"User {current_user.id} ({current_user.full_name}) fetching all active events")
-    # Only show non-archived events to members
+    # Only show non-archived and approved events to members (exclude declined and pending)
     events = db.query(models.Event).filter(
-        models.Event.archived == False
+        models.Event.archived == False,
+        models.Event.approval_status == models.EventApprovalStatus.approved
     ).all()
     for event in events:
         event.is_participant = any(participant.id == current_user.id for participant in event.participants)
-    logger.info(f"User {current_user.id} fetched {len(events)} events")
+    logger.info(f"User {current_user.id} fetched {len(events)} approved events")
     return events
 @router.post("/join/{event_id}", response_model=schemas.MessageResponse)
 def join_event(
@@ -217,6 +218,7 @@ async def admin_create_event(
         location=location,
         registration_start=registration_start,
         registration_end=registration_end,
+        approval_status=models.EventApprovalStatus.pending,
     )
     db.add(new_event)
     db.commit()
@@ -273,6 +275,48 @@ def admin_delete_event(
     db.commit()
     logger.info(f"Officer {current_officer.id} archived event {event_id} successfully")
     return {"detail": "Event archived successfully"}
+
+@router.post("/{event_id}/decline", response_model=schemas.MessageResponse)
+async def decline_event(
+    event_id: int,
+    reason: str = Form(...),
+    db: Session = Depends(get_db),
+    current_officer: models.Officer = Depends(admin_required)
+):
+    """Decline an event. Only admins can decline events."""
+    logger.debug(f"Admin {current_officer.id} attempting to decline event id: {event_id}")
+    event = db.query(models.Event).filter(models.Event.id == event_id).first()
+    if not event:
+        logger.error(f"Event {event_id} not found for decline")
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    event.approval_status = models.EventApprovalStatus.declined
+    event.decline_reason = reason
+    db.commit()
+    db.refresh(event)
+    logger.info(f"Admin {current_officer.id} declined event {event_id} with reason: {reason}")
+    return {"message": "Event declined successfully"}
+
+@router.post("/{event_id}/approve", response_model=schemas.MessageResponse)
+async def approve_event(
+    event_id: int,
+    db: Session = Depends(get_db),
+    current_officer: models.Officer = Depends(admin_required)
+):
+    """Approve an event. Only admins can approve events."""
+    logger.debug(f"Admin {current_officer.id} attempting to approve event id: {event_id}")
+    event = db.query(models.Event).filter(models.Event.id == event_id).first()
+    if not event:
+        logger.error(f"Event {event_id} not found for approval")
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    event.approval_status = models.EventApprovalStatus.approved
+    event.decline_reason = None  # Clear decline reason when approving
+    db.commit()
+    db.refresh(event)
+    logger.info(f"Admin {current_officer.id} approved event {event_id}")
+    return {"message": "Event approved successfully"}
+
 from sqlalchemy.orm import joinedload
 
 @router.get("/{event_id}/participants", response_model=List[schemas.User])

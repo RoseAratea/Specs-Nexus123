@@ -27,10 +27,13 @@ def get_db():
 @router.post("/login", response_model=schemas.TokenResponse)
 def officer_login(officer: schemas.OfficerLoginSchema, db: Session = Depends(get_db)):
     logger.debug(f"Officer login attempt for email: {officer.email}")
-    db_officer = db.query(models.Officer).filter(models.Officer.email == officer.email).first()
+    db_officer = db.query(models.Officer).filter(
+        models.Officer.email == officer.email,
+        models.Officer.archived == False
+    ).first()
     if not db_officer:
-        logger.error("Incorrect email provided for officer login")
-        raise HTTPException(status_code=400, detail="Incorrect email")
+        logger.error("Incorrect email provided for officer login or officer is archived")
+        raise HTTPException(status_code=400, detail="Incorrect email or account is deactivated")
     
     if officer.password != db_officer.password:
         logger.error("Incorrect password for officer login")

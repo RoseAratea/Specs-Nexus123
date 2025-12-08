@@ -75,10 +75,21 @@ const OfficerManageAnnouncementsPage = () => {
       } catch (error) {
         console.error("Failed to fetch data:", error.message);
         let errorMessage = 'Failed to load announcements. Please try again later.';
-        if (error.message.includes('Officer not found')) {
+        
+        const isOfficerNotFound = error.message.includes('Officer not found') || 
+                                  error.message.includes('detail: Officer not found');
+        const isTokenExpired = error.message.includes('Token expired') || 
+                               error.message.includes('expired token');
+        const isInvalidToken = error.message.includes('Invalid token') || 
+                               error.message.includes('Invalid authentication credentials') ||
+                               error.message.includes('Could not validate credentials');
+        const is401Error = error.message.includes('HTTP error! status: 401');
+        
+        if (isOfficerNotFound) {
           errorMessage = 'Your officer account was not found or is deactivated. Please contact support or log in again.';
         }
-        if (error.message.includes('Invalid or expired token') || error.message.includes('HTTP error! status: 401')) {
+        
+        if (isOfficerNotFound || isTokenExpired || isInvalidToken || (is401Error && !isOfficerNotFound)) {
           console.log('Authentication failed, clearing storage and redirecting to login');
           localStorage.removeItem('officerAccessToken');
           localStorage.removeItem('officerInfo');

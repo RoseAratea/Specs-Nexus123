@@ -6,6 +6,11 @@ from datetime import datetime, timezone
 
 year_enum = Enum('1st Year', '2nd Year', '3rd Year', '4th Year', name='year_enum')
 
+class EventApprovalStatus(enum.Enum):
+    pending = "pending"
+    approved = "approved"
+    declined = "declined"
+
 event_participants = Table(
     "event_participants",
     Base.metadata,
@@ -78,6 +83,8 @@ class Event(Base):
     archived = Column(Boolean, default=False)
     registration_start = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     registration_end = Column(DateTime, nullable=True)
+    approval_status = Column(Enum(EventApprovalStatus, name='event_approval_status'), default=EventApprovalStatus.pending, nullable=True)
+    decline_reason = Column(String(500), nullable=True)
     participants = relationship("User", secondary=event_participants, back_populates="events_joined")
     certificates = relationship("ECertificate", back_populates="event")
 

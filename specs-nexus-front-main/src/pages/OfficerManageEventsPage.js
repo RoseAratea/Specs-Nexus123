@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getOfficerEvents, createOfficerEvent, updateOfficerEvent, deleteOfficerEvent } from '../services/officerEventService';
+import { getOfficerEvents, createOfficerEvent, updateOfficerEvent, deleteOfficerEvent, declineOfficerEvent, approveOfficerEvent } from '../services/officerEventService';
 import EventParticipantsModal from '../components/EventParticipantsModal';
 import OfficerEventModal from '../components/OfficerEventModal';
 import EventModal from '../components/EventModal';
@@ -75,22 +75,45 @@ const OfficerManageEventsPage = () => {
       } catch (error) {
         console.error("Failed to fetch data:", error.message);
         let errorMessage = 'Failed to load events. Please try again later.';
-        if (error.message.includes('Officer not found')) {
-          errorMessage = 'Your officer account was not found or is deactivated. Please contact support or log in again.';
-        }
-        if (error.message.includes('Invalid or expired token') || error.message.includes('HTTP error! status: 401')) {
-          console.log('Authentication failed, clearing storage and redirecting to login');
+        
+        // Check for specific error types
+        const isOfficerNotFound = error.message.includes('Officer not found') || 
+                                  error.message.includes('detail: Officer not found');
+        const isTokenExpired = error.message.includes('Token expired') || 
+                               error.message.includes('expired token');
+        const isInvalidToken = error.message.includes('Invalid token') || 
+                               error.message.includes('Invalid authentication credentials') ||
+                               error.message.includes('Could not validate credentials');
+        const is401Error = error.message.includes('HTTP error! status: 401');
+        
+        // Handle "Officer not found" errors (account archived/deactivated)
+        if (isOfficerNotFound) {
+          console.log('Officer account not found or deactivated, clearing storage and redirecting to login');
           localStorage.removeItem('officerAccessToken');
           localStorage.removeItem('officerInfo');
           navigate('/officer-login');
-        } else {
-          setStatusModal({
-            isOpen: true,
-            title: 'Error',
-            message: errorMessage,
-            type: 'error',
-          });
+          return;
         }
+        
+        // Handle token expiration or invalid token errors
+        if (isTokenExpired || isInvalidToken || (is401Error && !isOfficerNotFound)) {
+          console.log('Authentication failed (token issue), clearing storage and redirecting to login');
+          localStorage.removeItem('officerAccessToken');
+          localStorage.removeItem('officerInfo');
+          navigate('/officer-login');
+          return;
+        }
+        
+        // For other errors, show error modal
+        if (error.message.includes('Officer not found')) {
+          errorMessage = 'Your officer account was not found or is deactivated. Please contact support or log in again.';
+        }
+        setStatusModal({
+          isOpen: true,
+          title: 'Error',
+          message: errorMessage,
+          type: 'error',
+        });
       } finally {
         setIsLoading(false);
         setIsTransitioning(false);
@@ -132,28 +155,8 @@ const OfficerManageEventsPage = () => {
 
     try {
       if (action === 'decline') {
-        // Call backend decline endpoint
-        const formData = new FormData();
-        formData.append('reason', reason || 'No reason provided');
-        
-        const response = await fetch(`${API_URL}/events/${eventId}/decline`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          if (response.status === 401) {
-            localStorage.removeItem('officerAccessToken');
-            localStorage.removeItem('officerInfo');
-            navigate('/officer-login');
-            return;
-          }
-          throw new Error(errorData.detail || 'Failed to decline event');
-        }
+        // Call backend decline endpoint using service function
+        await declineOfficerEvent(eventId, reason || 'No reason provided', token);
 
         setApprovalModal({ isOpen: false, eventId: null });
         setStatusModal({
@@ -163,24 +166,8 @@ const OfficerManageEventsPage = () => {
           type: 'error',
         });
       } else if (action === 'approve') {
-        // Approve path – call backend endpoint
-        const response = await fetch(`${API_URL}/events/${eventId}/approve`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          if (response.status === 401) {
-            localStorage.removeItem('officerAccessToken');
-            localStorage.removeItem('officerInfo');
-            navigate('/officer-login');
-            return;
-          }
-          throw new Error(errorData.detail || 'Failed to approve event');
-        }
+        // Approve path – call backend endpoint using service function
+        await approveOfficerEvent(eventId, token);
 
         setApprovalModal({ isOpen: false, eventId: null });
         setStatusModal({
@@ -240,7 +227,16 @@ const OfficerManageEventsPage = () => {
       });
     } catch (error) {
       console.error("Failed to archive event:", error.message);
-      if (error.message.includes('Invalid or expired token') || error.message.includes('HTTP error! status: 401')) {
+      const isOfficerNotFound = error.message.includes('Officer not found') || 
+                                error.message.includes('detail: Officer not found');
+      const isTokenExpired = error.message.includes('Token expired') || 
+                             error.message.includes('expired token');
+      const isInvalidToken = error.message.includes('Invalid token') || 
+                             error.message.includes('Invalid authentication credentials') ||
+                             error.message.includes('Could not validate credentials');
+      const is401Error = error.message.includes('HTTP error! status: 401');
+      
+      if (isOfficerNotFound || isTokenExpired || isInvalidToken || (is401Error && !isOfficerNotFound)) {
         console.log('Authentication failed, clearing storage and redirecting to login');
         localStorage.removeItem('officerAccessToken');
         localStorage.removeItem('officerInfo');
@@ -372,10 +368,20 @@ const OfficerManageEventsPage = () => {
     } catch (error) {
       console.error("Error saving event:", error.message);
       let errorMessage = 'Failed to save the event. Please try again.';
-      if (error.message.includes('Officer not found')) {
+      const isOfficerNotFound = error.message.includes('Officer not found') || 
+                                error.message.includes('detail: Officer not found');
+      const isTokenExpired = error.message.includes('Token expired') || 
+                             error.message.includes('expired token');
+      const isInvalidToken = error.message.includes('Invalid token') || 
+                             error.message.includes('Invalid authentication credentials') ||
+                             error.message.includes('Could not validate credentials');
+      const is401Error = error.message.includes('HTTP error! status: 401');
+      
+      if (isOfficerNotFound) {
         errorMessage = 'Your officer account was not found or is deactivated. Please contact support or log in again.';
       }
-      if (error.message.includes('Invalid or expired token') || error.message.includes('HTTP error! status: 401')) {
+      
+      if (isOfficerNotFound || isTokenExpired || isInvalidToken || (is401Error && !isOfficerNotFound)) {
         console.log('Authentication failed, redirecting to login');
         localStorage.removeItem('officerAccessToken');
         localStorage.removeItem('officerInfo');

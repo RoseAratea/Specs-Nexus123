@@ -190,3 +190,38 @@ export const declineOfficerEvent = async (eventId, reason, token) => {
     throw error;
   }
 };
+
+export const approveOfficerEvent = async (eventId, token) => {
+  if (!token) {
+    throw new Error('Missing authentication token');
+  }
+
+  try {
+    console.log(`Approving event ${eventId}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    
+    const response = await fetch(`${API_URL}/events/${eventId}/approve`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      signal: controller.signal,
+    });
+    
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Server response:', errorData);
+      throw new Error(`HTTP error! status: ${response.status}, detail: ${errorData.detail || 'Unknown'}`);
+    }
+
+    const data = await response.json();
+    console.log('Event approved successfully:', data);
+    return data;
+  } catch (error) {
+    console.error('Error approving event:', error.message);
+    throw error;
+  }
+};
